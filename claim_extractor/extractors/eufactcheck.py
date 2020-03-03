@@ -20,29 +20,8 @@ class EufactcheckFactCheckingSiteExtractor(FactCheckingSiteExtractor):
 
     def find_page_count(self, parsed_listing_page: BeautifulSoup) -> int:
         pages_list = parsed_listing_page.find("paginator").children
-        print("________________" + pages_list[-1])
-
-        return 0
-
-#    def find_page_count(self, parsed_listing_page: BeautifulSoup) -> int:
-#        count = 26
-#        url = "https://eufactcheck.eu/page/" + str(count + 1)
-#        result = caching.get(url, headers=self.headers, timeout=10)
-#        if result:
-#            while result:
-#                count += 1
-#                url = "https://eufactcheck.eu/page/" + str(count)
-#                result = caching.get(url, headers=self.headers, timeout=10)
-#                if result:
-#                    parsed = BeautifulSoup(result, self.configuration.parser_engine)
-                    # ???
-#                    articles = parsed.find("articles").findAll("article")
-#                    if not articles or len(articles) == 0:
-#                        break
-#        else:
-#            count -= 1
-
-#        return count
+        max_page = int(pages_list[-2].contents[0])
+        return max_page
 
 
     def retrieve_urls(self, parsed_listing_page: BeautifulSoup, listing_page_url: str, number_of_pages: int) \
@@ -60,4 +39,31 @@ class EufactcheckFactCheckingSiteExtractor(FactCheckingSiteExtractor):
         claim = Claim()
         claim.set_url(url)
         claim.set_source("eufactcheck")
+
+        #title
+        #Since the title always starts with claim followed by the title of the article we split the string based on ":"
+        full_title = parsed_claim_review_page.find("div", class="page-title-head hgroup").find("h1").text.split(":")
+        claim.set_title(full_title[1])
+
+        #date
+        full_date = parsed_claim_review_page.find("time").datetime.split("T")
+        claim.set_date(full_date[0])
+
+        #body
+        body = parsed_claim_review_page.find("entry-content")
+        claim.set_body(body.get_text())
+
+        #related related_links
+        div_tag = parsed_claim_review_page.find("entry-content")
+        related_links = []
+        for link in div_tag.findAll('a', href=True):
+            related_links.append(link['href'])
+        claim.set_refered_links(related_links)
+
+        #claim.set_claim(claim.title) need to understand this
+
+        #rating
+        rating = full_title[0].strip()
+        claim.set_alternate_name(rating)
+
         return [claim]
