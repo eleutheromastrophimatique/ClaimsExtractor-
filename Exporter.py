@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import getopt
 import sys
+import time
 
 sys.path.append('claim_extractor')
 
@@ -16,7 +17,7 @@ from claim_extractor import Configuration
 def main(argv):
     options = {}
     criteria = Configuration()
-    criteria.setOutput("output_got.csv")
+    criteria.setOutput("output_got_"+str(int(time.time()))+".csv")
 
     if len(argv) == 0:
         print('You must pass some parameters. Use \"-h\" to help.')

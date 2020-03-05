@@ -39,13 +39,17 @@ class CheckyourfactFactCheckingSiteExtractor(FactCheckingSiteExtractor):
 
     def retrieve_urls(self, parsed_listing_page: BeautifulSoup, listing_page_url: str, number_of_pages: int) \
             -> List[str]:
+        #lien de la premiere page -> liste de textes
         urls = self.extract_urls(parsed_listing_page)
-
+        #parcours from 2 to end
         for page_number in tqdm(range(2, number_of_pages)):
             url = "https://checkyourfact.com/page/" + str(page_number) + "/"
+            #load from cache (download if not exists, sinon load )
             page = caching.get(url, headers=self.headers, timeout=5)
             if page:
+                #parser avec BeautifulSoup la page
                 current_parsed_listing_page = BeautifulSoup(page, "lxml")
+                #extriare les liens dans cette page et rajoute dans urls
                 urls +=self.extract_urls(current_parsed_listing_page)
             else:
                 break
@@ -73,6 +77,7 @@ class CheckyourfactFactCheckingSiteExtractor(FactCheckingSiteExtractor):
         title = parsed_claim_review_page.find('article').find("h1")
         claim.set_title(title.text.replace("FACT CHECK: ", ""))
 
+        #date
         url_date = url.replace("https://checkyourfact.com/", "").replace("/", " ").split(" ")
         claim.set_date(url_date[0] + "-" + url_date[1] + "-" + url_date[2])
 

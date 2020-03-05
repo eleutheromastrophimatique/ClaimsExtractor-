@@ -33,6 +33,7 @@ def get_sites():
 
 def get_claims(configuration):
     if configuration.website:
+        print(configuration.website)
         websites = []
         split_list = configuration.website.split(",")
         if len(split_list) > 0:
