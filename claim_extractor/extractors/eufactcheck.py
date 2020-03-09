@@ -13,7 +13,6 @@ class EufactcheckFactCheckingSiteExtractor(FactCheckingSiteExtractor):
 
     def __init__(self, configuration: Configuration):
         super().__init__(configuration)
-        #self.date_regexp = re.compile("^([0-9]{4})/([0-9]{2})/([0-9]{2})*") #date:annee, mois, jour
 
     def retrieve_listing_page_urls(self) -> List[str]:
         return ["https://eufactcheck.eu/page/1/"]
@@ -85,5 +84,4 @@ class EufactcheckFactCheckingSiteExtractor(FactCheckingSiteExtractor):
         #rating
         rating = full_title[0].strip()
         claim.set_alternate_name(rating)
-
         return [claim]

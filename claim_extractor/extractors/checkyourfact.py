@@ -34,7 +34,6 @@ class CheckyourfactFactCheckingSiteExtractor(FactCheckingSiteExtractor):
                         break
         else:
             count -= 1
-
         return count
 
     def retrieve_urls(self, parsed_listing_page: BeautifulSoup, listing_page_url: str, number_of_pages: int) \
@@ -53,7 +52,6 @@ class CheckyourfactFactCheckingSiteExtractor(FactCheckingSiteExtractor):
                 urls +=self.extract_urls(current_parsed_listing_page)
             else:
                 break
-
         return urls
 
     def extract_urls(self, parsed_listing_page: BeautifulSoup):
@@ -103,7 +101,6 @@ class CheckyourfactFactCheckingSiteExtractor(FactCheckingSiteExtractor):
             pass
 
         tags = []
-
         for tag in parsed_claim_review_page.findAll('meta', {"property": "article:tag"}):
             tags.append(tag["content"])
         claim.set_tags(", ".join(tags))

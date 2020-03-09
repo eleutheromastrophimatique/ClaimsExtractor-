@@ -58,7 +58,9 @@ class PolygraphFactCheckingSiteExtractor(FactCheckingSiteExtractor):
 
     def extract_urls(self, parsed_listing_page: BeautifulSoup):
         urls = list()
-        links = parsed_listing_page.findAll("a", {"class":"title"})
+        #when simply findAll(a, class=title), same href exists two times (title and title red)
+        links = parsed_listing_page.findAll(lambda tag: tag.name == 'a' and
+                                           tag.get('class') == ['title'])
         for anchor in links:
             url = "https://www.polygraph.info" + str(anchor['href'])
             max_claims = self.configuration.maxClaims
@@ -75,16 +77,18 @@ class PolygraphFactCheckingSiteExtractor(FactCheckingSiteExtractor):
         claim.set_source("polygraph")
 
         #title
-        #Since the title always starts with claim followed by the title of the article we split the string based on ":"
-        title = parsed_claim_review_page.find("div", {"class":"title pg-title"}).find("h1")
-        claim.set_title(title.text)
+        title = parsed_claim_review_page.find("h1", {"class":"title pg-title"})
+        claim.set_title(title.text.replace(";", ","))
 
         #date
         full_date = parsed_claim_review_page.find("time")['datetime'].split("T")
         claim.set_date(full_date[0])
 
         #body
-        body = parsed_claim_review_page.find('div', {"class":"wsw"})
+        #body = parsed_claim_review_page.find('div', {"id":"article-content"}).find_all('p')
+        #for b in body:
+        #    claim.set_body(b.get_text())
+        body = parsed_claim_review_page.find("div", {"id" : "article-content"})
         claim.set_body(body.get_text())
 
         #related related_links
@@ -100,7 +104,7 @@ class PolygraphFactCheckingSiteExtractor(FactCheckingSiteExtractor):
         claim.set_author(author.text)
 
         #rating
-        rating = parsed_claim_review_page.find('div', {"class":"verdict"}).findAll(attrs={'class': None})
+        rating = parsed_claim_review_page.find('div', {"class":"verdict"}).find_all('span')[1]
         claim.set_alternate_name(rating.text)
 
         return [claim]
