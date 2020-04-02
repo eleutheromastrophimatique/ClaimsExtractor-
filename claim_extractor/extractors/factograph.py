@@ -15,6 +15,11 @@ class FactographFactCheckingSiteExtractor(FactCheckingSiteExtractor):
         super().__init__(configuration)
 
     def retrieve_listing_page_urls(self) -> List[str]:
+        #Страна : https://www.factograph.info/z/20882
+        #Мир : https://www.factograph.info/z/21006
+        #Общество : https://www.factograph.info/z/20883
+        #Экономика : https://www.factograph.info/z/20885
+        #ALL FACTS = Все факты: https://www.factograph.info/z/20894
         return ["https://www.factograph.info/z/20894/?p=1"]
 
     def find_page_count(self, parsed_listing_page: BeautifulSoup) -> int:
@@ -43,7 +48,7 @@ class FactographFactCheckingSiteExtractor(FactCheckingSiteExtractor):
         urls = self.extract_urls(parsed_listing_page)
         #parcours from 2 to end
         for page_number in tqdm(range(2, number_of_pages+1)):
-            url = "https://www.factograph.info/z/20894/?p=" + str(page_number) + "/"
+            url = "https://www.factograph.info/z/20894/?p=" + str(page_number)
             #load from cache (download if not exists, sinon load )
             page = caching.get(url, headers=self.headers, timeout=5)
             if page:
